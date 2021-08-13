@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Orders{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mb-4">Orders</h1>
+    <div>
+        <a href="{{ path('order_new') }}" class="btn btn-primary mb-4">New Order</a>
+    </div>
+    {% if orders %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Products</th>
+                <th scope="col">Total</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Addresses</th>
+                <th scope="col">Order Position</th>
+                <th scope="col">Created Date</th>
+                <th scope="col">Payed</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for order in orders %}
+                <tr>
+                    <th scope="row">{{ order.getId() }}</th>
+                    <td>
+                        <ul>
+                            {% for product in order.getProducts() %}
+                                <li>{{ product.getName() }} - {{ product.getPrice()|number_format(2, '.', ',') }}&euro;</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        {{ order.getTotal()|number_format(2, '.', ',') }}&euro;
+                    </td>
+                    <td>{{ order.getCustomer() }}</td>
+                    <td>
+                        <strong>Billing Address</strong> <br/>
+                        {{ order.getBillingAddressCountry().getName() }},
+                        {{ order.getBillingAddressAddress() }}<br>
+                        <strong>Shipping Address</strong> <br/>
+                        {{ order.getShippingAddressCountry().getName() }},
+                        {{ order.getShippingAddressAddress() }}
+                    </td>
+                    <td>{{ order.getPosition() }}</td>
+                    <td>{{ order.getCreatedAt()|date("d/m/Y") }}</td>
+                    <td>{{ order.getPayments()|length ? 'Yes' : 'No' }}</td>
+                    <td>
+                        <div class="d-flex">
+                            <a href="{{ path('order_update', {orderNumber: order.getOrderNumber()}) }}" type="button" class="btn btn-sm btn-primary mr-1">Edit</a>
+                            <a href="{{ path('order_delete', {orderNumber: order.getOrderNumber()}) }}" type="button" class="btn btn-sm btn-danger mr-1">Delete</a>
+                            <a href="{{ path('order_delivery_note', {orderNumber: order.getOrderNumber()}) }}" type="button" class="btn btn-sm btn-success mr-1">Note</a>
+                            <a href="{{ path('order_bill', {orderNumber: order.getOrderNumber()}) }}" type="button" class="btn btn-sm btn-success">Bill</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You don't have Orders</p>
+    {% endif %}
+</div>
+{% endblock %}

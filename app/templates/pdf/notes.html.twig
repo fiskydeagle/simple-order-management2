@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delivery Notes</title>
+
+    <style type="text/css">
+        * {
+            font-family: Verdana, Arial, sans-serif;
+        }
+        table{
+            font-size: x-small;
+        }
+        tfoot tr td{
+            font-weight: bold;
+            font-size: x-small;
+        }
+        .gray {
+            background-color: lightgray
+        }
+    </style>
+
+</head>
+<body>
+<h2>Order No: {{ order.getOrderNumber() }}</h2>
+<h3>Position: {{ order.getPosition() }}</h3>
+<table width="100%">
+    <tr>
+        <td valign="top">
+            <h3>Billing Address</h3>
+            <p>
+                {{ order.getBillingAddressAddress()}} <br/>
+                {{ order.getBillingAddressZipCode()}}, {{ order.getBillingAddressCountry()}}<br/>
+                Email: {{ order.getBillingAddressEmail() }} <br/>
+                Phone: {{ order.getBillingAddressPhone() }}
+            </p>
+        </td>
+        <td align="right">
+            <h3>Shipping Address</h3>
+            <p>
+                {{ order.getShippingAddressAddress()}} <br/>
+                {{ order.getShippingAddressZipCode()}}, {{ order.getShippingAddressCountry()}}<br/>
+                Email: {{ order.getShippingAddressEmail() }} <br/>
+                Phone: {{ order.getShippingAddressPhone() }}
+            </p>
+        </td>
+    </tr>
+
+</table>
+
+<br/>
+
+<h3>Notes</h3>
+{% if order.getNotes() %}
+<table width="100%">
+    <thead style="background-color: lightgray;">
+    <tr>
+        <th>#</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for note in order.getNotes() %}
+    <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td>{{ note.getDescription() }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>This order doesn't have any notes.</p>
+{% endif %}
+
+</body>
+</html>

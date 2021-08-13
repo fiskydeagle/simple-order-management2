@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Orders{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mb-4">Update Order</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            {{ form(form) }}
+            {{ form_end(form) }}
+        </div>
+        <div class="col-md-6">
+            <h4 class="mb-3">Notes</h4>
+            {% for note in notes %}
+            <div class="mb-3">
+                <p>{{ note.getDescription() }}</p>
+                <hr>
+            </div>
+            {% endfor %}
+
+            <a href="{{ path('order_new_note', {orderNumber: orderNumber}) }}" class="btn btn-primary mb-4">Add New Note</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
