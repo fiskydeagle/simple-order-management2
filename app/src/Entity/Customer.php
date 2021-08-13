@@ -50,18 +50,19 @@ class Customer
     private float $balance;
 
     /**
-     * @ORM\OneToMany(targetEntity=Payment::class, mappedBy="Customer")
+     * @ORM\OneToMany(targetEntity=Payment::class, mappedBy="customer")
      */
     private $payments;
 
     /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="Customer")
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="customer")
      */
     private $orders;
 
     public function __construct()
     {
         $this->payments = new ArrayCollection();
+        $this->orders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,11 +106,6 @@ class Customer
         return $this;
     }
 
-    public function __toString()
-    {
-        return $this->getFirstName() . ' ' . $this->getLastName();
-    }
-
     /**
      * @return Collection|Payment[]
      */
@@ -138,5 +134,40 @@ class Customer
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Order[]
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getCustomer() === $this) {
+                $order->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->getFirstName() . ' ' . $this->getLastName();
     }
 }

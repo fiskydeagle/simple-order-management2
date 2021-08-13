@@ -117,13 +117,6 @@ class Order
     private ?Collection $products;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Customer")
-     * @ORM\JoinColumn(nullable=false)
-     * @Assert\NotBlank()
-     */
-    private ?Customer $customer;
-
-    /**
      * @ORM\Column(type="datetime")
      */
     private ?\DateTimeInterface $created_at = null;
@@ -142,7 +135,7 @@ class Order
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="orders")
      * @ORM\JoinColumn(nullable=false)
      */
-    private ?Customer $Customer;
+    private ?Customer $customer;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Country")
@@ -463,7 +456,7 @@ class Order
         return $this->customer;
     }
 
-    public function setCustomer(?Customer $customer): self
+    public function setCustomer(Customer $customer): self
     {
         $this->customer = $customer;
 

@@ -47,19 +47,12 @@ class OrdersController extends AbstractController
             $em->flush();
 
             $this->addFlash('info','Submitted Successfully!');
-            die($this->redirect('/orders'));
             return $this->redirect('/orders');
         }
 
-        die(
-            $this->renderView('orders/new.html.twig',[
-                'form' => $form->createView()
-            ])
-        );
-
-        /*return $this->render('orders/new.html.twig',[
+        return $this->render('orders/new.html.twig',[
             'form' => $form->createView()
-        ]);*/
+        ]);
     }
 
     /**
@@ -86,14 +79,6 @@ class OrdersController extends AbstractController
             $this->addFlash('info','Updated Successfully!');
             return $this->redirect('/orders');
         }
-
-        /*die(
-            $this->renderView('orders/update.html.twig',[
-                'form' => $form->createView(),
-                'notes' => $order->getNotes(),
-                'orderNumber' => $order->getOrderNumber(),
-            ])
-        );*/
 
        return $this->render('orders/update.html.twig',[
             'form' => $form->createView(),
@@ -187,8 +172,6 @@ class OrdersController extends AbstractController
             $em->flush();
 
             $this->addFlash('info','Submitted Successfully!');
-
-            die($this->redirectToRoute('order_update', ['orderNumber' => $orderNumber]));
 
             return $this->redirectToRoute('order_update', ['orderNumber' => $orderNumber]);
         }

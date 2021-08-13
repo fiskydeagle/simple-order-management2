@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Address;
 use App\Entity\Country;
 use App\Entity\Customer;
 use App\Entity\Note;
@@ -87,7 +86,6 @@ class AppFixtures extends Fixture
             $order = new Order();
 
             $order->setPosition(Order::POSITON_PENDING);
-            $order->setCustomer($this->getReference('customer' . ceil(rand(0, 9))));
 
             $order->setCreatedAt($this->faker->dateTimeThisMonth);
 
@@ -123,6 +121,8 @@ class AppFixtures extends Fixture
 
                 $order->addNote($note);
             }
+
+            $order->setCustomer($this->getReference('customer' . ceil(rand(0, 9))));
 
             $this->setReference('order_' . $i, $order);
 
