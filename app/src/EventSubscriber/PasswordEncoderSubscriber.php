@@ -8,15 +8,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class PasswordEncoderSubscriber implements EventSubscriberInterface
 {
-    private UserPasswordEncoderInterface $userPasswordEncoder;
+    private UserPasswordHasherInterface $passwordHasher;
 
-    public function __construct(UserPasswordEncoderInterface $userPasswordEncoder)
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
     {
-        $this->userPasswordEncoder = $userPasswordEncoder;
+        $this->passwordHasher = $passwordHasher;
     }
 
     public static function getSubscribedEvents()
@@ -34,7 +34,7 @@ class PasswordEncoderSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $customer->setPassword($this->userPasswordEncoder->encodePassword(
+        $customer->setPassword($this->passwordHasher->hashPassword(
             $customer,
             $customer->getPassword()
         ));

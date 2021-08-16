@@ -5,3 +5,12 @@ api_platform:
         json: ['application/merge-patch+json']
     swagger:
         versions: [3]
+        api_keys:
+            apiKey:
+                name: Authorization
+                type: header
+    # Good cache defaults for REST APIs
+    defaults:
+        stateless: true
+        cache_headers:
+            vary: [ 'Content-Type', 'Authorization', 'Origin' ]
