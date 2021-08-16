@@ -7,8 +7,11 @@ use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\CustomerPaymentOverdueAction;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ApiResource(
@@ -20,44 +23,94 @@ use App\Controller\CustomerPaymentOverdueAction;
  *              "path"="/customers/payment-overdue",
  *              "controller"=CustomerPaymentOverdueAction::class,
  *          }
+ *     },
+ *     normalizationContext={
+ *          "groups"={"read"}
  *     }
  * )
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
+ * @UniqueEntity("username")
+ * @UniqueEntity("email")
  */
-class Customer
+class Customer implements UserInterface
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"read"})
      */
-    private ?int $id;
+    private ?int $id = null;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=6, max=255)
+     * @Groups({"read"})
+     */
+    private ?string $username;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email()
+     * @Assert\Length(min=6, max=255)
+     * @Groups({"read"})
+     */
+    private ?string $email;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Regex(
+     *     pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
+     *     message="Password must be seven characters long and contain at least one digit, one uppecase letter and one lowercase letter."
+     * )
+     */
+    private ?string $password;
+
+
+    /**
+     * @Groups({"read"})
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull()
+     */
+    private string $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotNull()
+     * @Groups({"read"})
      */
-    private string $first_name;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $last_name;
+    private string $lastName;
 
     /**
      * @ORM\Column(type="decimal", precision=10, scale=2)
+     * @Assert\NotNull()
+     * @Groups({"read"})
      */
-    private float $balance;
+    private string $balance;
 
     /**
      * @ORM\OneToMany(targetEntity=Payment::class, mappedBy="customer")
+     * @Groups({"read"})
      */
     private $payments;
 
     /**
      * @ORM\OneToMany(targetEntity=Order::class, mappedBy="customer")
+     * @Groups({"read"})
      */
     private $orders;
+
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Expression(
+     *     "this.getPassword() === this.getRetypedPassword()",
+     *     message="Passwords does not match"
+     * )
+     */
+    private ?string $retypedPassword = null;
 
     public function __construct()
     {
@@ -72,24 +125,24 @@ class Customer
 
     public function getFirstName(): ?string
     {
-        return $this->first_name;
+        return $this->firstName;
     }
 
-    public function setFirstName(string $first_name): self
+    public function setFirstName(string $firstName): self
     {
-        $this->first_name = $first_name;
+        $this->firstName = $firstName;
 
         return $this;
     }
 
     public function getLastName(): ?string
     {
-        return $this->last_name;
+        return $this->lastName;
     }
 
-    public function setLastName(string $last_name): self
+    public function setLastName(string $lastName): self
     {
-        $this->last_name = $last_name;
+        $this->lastName = $lastName;
 
         return $this;
     }
@@ -99,7 +152,7 @@ class Customer
         return $this->balance;
     }
 
-    public function setBalance(float $balance): self
+    public function setBalance(string $balance): self
     {
         $this->balance = $balance;
 
@@ -166,8 +219,71 @@ class Customer
         return $this;
     }
 
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(?string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getRetypedPassword(): ?string
+    {
+        return $this->retypedPassword;
+    }
+
+    public function setRetypedPassword(?string $retypedPassword): self
+    {
+        $this->retypedPassword = $retypedPassword;
+
+        return $this;
+    }
+
     public function __toString()
     {
         return $this->getFirstName() . ' ' . $this->getLastName();
+    }
+
+    public function getRoles()
+    {
+        return ['ROLE_USER'];
+    }
+
+    public function getSalt()
+    {
+        return null;
+    }
+
+    public function eraseCredentials()
+    {
+
     }
 }
